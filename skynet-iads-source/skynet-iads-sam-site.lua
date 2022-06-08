@@ -29,6 +29,41 @@ function SkynetIADSSamSite:isDestroyed()
 	return isDestroyed
 end
 
+function SkynetIADSSamSite:areLaunchersDestroyed()
+    local launchersDestroyed = true
+    for i = 1, #self.launchers do
+        local launcher = self.launchers[i]
+        if launcher:isExist() == true then
+            launchersDestroyed = false
+        end
+    end
+    return launchersDestroyed
+end
+
+function SkynetIADSSamSite:areTrackingRadarDestroyed()
+    local trackRadarDestroyed = true
+    local radars = self:getTrackingRadars()
+    for i = 1, #radars do
+        local radar = radars[i]
+        if radar:isExist() then
+            trackRadarDestroyed = false
+        end
+    end
+    return trackRadarDestroyed
+end
+
+function SkynetIADSSamSite:areSearchRadarDestroyed()
+    local searchRadarDestroyed = true
+    local radars = self:getSearchRadars()
+    for i = 1, #radars do
+        local radar = radars[i]
+        if radar:isExist() then
+            searchRadarDestroyed = false
+        end
+    end
+    return searchRadarDestroyed
+end
+
 function SkynetIADSSamSite:targetCycleUpdateStart()
 	self.targetsInRange = false
 end
