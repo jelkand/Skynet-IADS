@@ -1,4 +1,4 @@
-env.info("--- SKYNET VERSION: 3.0.0-develop | BUILD TIME: 03.04.2022 1630Z ---")
+env.info("--- SKYNET VERSION: 3.0.1-develop | BUILD TIME: 09.06.2022 2318Z ---")
 do
 --this file contains the required units per sam type
 samTypesDB = {
@@ -961,8 +961,14 @@ function SkynetIADSLogger:printSAMSiteStatus()
 		
 		local samSitesInCoveredArea = samSite:getChildRadars()
 		
+		local engageAirWeapons = samSite:getCanEngageAirWeapons()
+		
+		local engageHARMS = samSite:getCanEngageHARM()
+		
+		local hasAmmo = samSite:hasRemainingAmmo()
+		
 		self:printOutputToLog("GROUP: "..samSite:getDCSName().." | TYPE: "..samSite:getNatoName())
-		self:printOutputToLog("ACTIVE: "..tostring(isActive).." | AUTONOMOUS: "..tostring(isAutonomous).." | IS ACTING AS EW: "..tostring(samSite:getActAsEW()).." | DETECTED TARGETS: "..#detectedTargets.." | DEFENDING HARM: "..tostring(samSite:isDefendingHARM()).." | MISSILES IN FLIGHT: "..tostring(samSite:getNumberOfMissilesInFlight()))
+		self:printOutputToLog("ACTIVE: "..tostring(isActive).." | AUTONOMOUS: "..tostring(isAutonomous).." | IS ACTING AS EW: "..tostring(samSite:getActAsEW()).." | CAN ENGAGE AIR WEAPONS : "..tostring(engageAirWeapons).." | CAN ENGAGE HARMS : "..tostring(engageHARMS).." | HAS AMMO: "..tostring(hasAmmo).." | DETECTED TARGETS: "..#detectedTargets.." | DEFENDING HARM: "..tostring(samSite:isDefendingHARM()).." | MISSILES IN FLIGHT: "..tostring(samSite:getNumberOfMissilesInFlight()))
 		
 		if numConnectionNodes > 0 then
 			self:printOutputToLog("CONNECTION NODES: "..numConnectionNodes.." | DAMAGED: "..numDamagedConnectionNodes.." | INTACT: "..intactConnectionNodes)
@@ -2119,7 +2125,6 @@ function SkynetIADSAbstractRadarElement:create(dcsElementWithRadar, iads)
 	instance.missilesInFlight = {}
 	instance.pointDefences = {}
 	instance.harmDecoys = {}
-	instance.ingnoreHARMSWhilePointDefencesHaveAmmo = false
 	instance.autonomousBehaviour = SkynetIADSAbstractRadarElement.AUTONOMOUS_STATE_DCS_AI
 	instance.goLiveRange = SkynetIADSAbstractRadarElement.GO_LIVE_WHEN_IN_KILL_ZONE
 	instance.isAutonomous = true
@@ -3488,22 +3493,54 @@ function SkynetIADSSamSite:create(samGroup, iads)
 	return sam
 end
 
+-- TANR Note: Following same logic as previous isDestroyed but separated pieces
 function SkynetIADSSamSite:isDestroyed()
 	local isDestroyed = true
-	for i = 1, #self.launchers do
-		local launcher = self.launchers[i]
-		if launcher:isExist() == true then
-			isDestroyed = false
-		end
+	if self:areLaunchersDestroyed() == false then
+		isDestroyed = false
 	end
-	local radars = self:getRadars()
-	for i = 1, #radars do
-		local radar = radars[i]
-		if radar:isExist() == true then
-			isDestroyed = false
-		end
-	end	
+	if self:areTrackingRadarDestroyed() == false then
+		isDestroyed = false
+	end
+	if self:areSearchRadarDestroyed() == false then
+		isDestroyed = false
+	end
 	return isDestroyed
+end
+
+function SkynetIADSSamSite:areLaunchersDestroyed()
+    local launchersDestroyed = true
+    for i = 1, #self.launchers do
+        local launcher = self.launchers[i]
+        if launcher:isExist() == true then
+            launchersDestroyed = false
+        end
+    end
+    return launchersDestroyed
+end
+
+function SkynetIADSSamSite:areTrackingRadarDestroyed()
+    local trackRadarDestroyed = true
+    local radars = self:getTrackingRadars()
+    for i = 1, #radars do
+        local radar = radars[i]
+        if radar:isExist() then
+            trackRadarDestroyed = false
+        end
+    end
+    return trackRadarDestroyed
+end
+
+function SkynetIADSSamSite:areSearchRadarDestroyed()
+    local searchRadarDestroyed = true
+    local radars = self:getSearchRadars()
+    for i = 1, #radars do
+        local radar = radars[i]
+        if radar:isExist() then
+            searchRadarDestroyed = false
+        end
+    end
+    return searchRadarDestroyed
 end
 
 function SkynetIADSSamSite:targetCycleUpdateStart()

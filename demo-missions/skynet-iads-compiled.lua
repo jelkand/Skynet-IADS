@@ -1,4 +1,4 @@
-env.info("--- SKYNET VERSION: 3.0.0-develop | BUILD TIME: 03.04.2022 1701Z ---")
+env.info("--- SKYNET VERSION: 3.0.1-develop | BUILD TIME: 09.06.2022 2318Z ---")
 do
 --this file contains the required units per sam type
 samTypesDB = {
@@ -3493,22 +3493,54 @@ function SkynetIADSSamSite:create(samGroup, iads)
 	return sam
 end
 
+-- TANR Note: Following same logic as previous isDestroyed but separated pieces
 function SkynetIADSSamSite:isDestroyed()
 	local isDestroyed = true
-	for i = 1, #self.launchers do
-		local launcher = self.launchers[i]
-		if launcher:isExist() == true then
-			isDestroyed = false
-		end
+	if self:areLaunchersDestroyed() == false then
+		isDestroyed = false
 	end
-	local radars = self:getRadars()
-	for i = 1, #radars do
-		local radar = radars[i]
-		if radar:isExist() == true then
-			isDestroyed = false
-		end
-	end	
+	if self:areTrackingRadarDestroyed() == false then
+		isDestroyed = false
+	end
+	if self:areSearchRadarDestroyed() == false then
+		isDestroyed = false
+	end
 	return isDestroyed
+end
+
+function SkynetIADSSamSite:areLaunchersDestroyed()
+    local launchersDestroyed = true
+    for i = 1, #self.launchers do
+        local launcher = self.launchers[i]
+        if launcher:isExist() == true then
+            launchersDestroyed = false
+        end
+    end
+    return launchersDestroyed
+end
+
+function SkynetIADSSamSite:areTrackingRadarDestroyed()
+    local trackRadarDestroyed = true
+    local radars = self:getTrackingRadars()
+    for i = 1, #radars do
+        local radar = radars[i]
+        if radar:isExist() then
+            trackRadarDestroyed = false
+        end
+    end
+    return trackRadarDestroyed
+end
+
+function SkynetIADSSamSite:areSearchRadarDestroyed()
+    local searchRadarDestroyed = true
+    local radars = self:getSearchRadars()
+    for i = 1, #radars do
+        local radar = radars[i]
+        if radar:isExist() then
+            searchRadarDestroyed = false
+        end
+    end
+    return searchRadarDestroyed
 end
 
 function SkynetIADSSamSite:targetCycleUpdateStart()

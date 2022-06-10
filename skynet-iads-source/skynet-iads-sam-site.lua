@@ -11,21 +11,18 @@ function SkynetIADSSamSite:create(samGroup, iads)
 	return sam
 end
 
+-- TANR Note: Following same logic as previous isDestroyed but separated pieces
 function SkynetIADSSamSite:isDestroyed()
 	local isDestroyed = true
-	for i = 1, #self.launchers do
-		local launcher = self.launchers[i]
-		if launcher:isExist() == true then
-			isDestroyed = false
-		end
+	if self:areLaunchersDestroyed() == false then
+		isDestroyed = false
 	end
-	local radars = self:getRadars()
-	for i = 1, #radars do
-		local radar = radars[i]
-		if radar:isExist() == true then
-			isDestroyed = false
-		end
-	end	
+	if self:areTrackingRadarDestroyed() == false then
+		isDestroyed = false
+	end
+	if self:areSearchRadarDestroyed() == false then
+		isDestroyed = false
+	end
 	return isDestroyed
 end
 

@@ -90,6 +90,7 @@ If you like using it, please consider a donation:**
  * [FAQ](#faq)
    * [Does Skynet IADS have an impact on game performance?](#does-skynet-iads-have-an-impact-on-game-performance)
    * [What air defence units shall I add to the Skynet IADS?](#what-air-defence-units-shall-i-add-to-the-skynet-iads)
+   * [Which SAM systems can engage HARMS?](#which-sam-systems-can-engage-harms)
    * [What exactly does Skynet do with the SAMS?](#what-exactly-does-skynet-do-with-the-sams)
    * [Are there known bugs?](#are-there-known-bugs)
    * [How do I know if a SAM site is in range of an EW site or a SAM site in EW mode?](#how-do-i-know-if-a-sam-site-is-in-range-of-an-ew-site-or-a-sam-site-in-ew-mode)
@@ -194,7 +195,7 @@ When a radar emitter (EW radar or SAM site) is attacked by a HARM there is a cha
 
 Use this feature if you don't want the IADS to loose situational awareness just because a HARM is inbound. The radar emitter will shut down, if it believes its point defences won't be able to handle the number of HARMs inbound. As long as there is one point defence launcher and missile per HARM inbound the radar emitter will keep emitting. If the HARMs exeed the number of point defence launchers and missiles the protected asset will shut down. Tests in DCS have shown that this is roughly the saturation point. If the SAM site reling on point defence can engagen HARMs its launchers an missiles will also count to the saturation point.
 
-As of April 2022 I have only been able to get the SA-15 and the SA-10 to engage HARMS. The SA-10 seems to have dificullty engaging HARMS when they are launched above a certain altitude (in my tests 25 k feet). The best option for a solid HARM defence is to add SA-15's around EW radars or high value SAM sites.
+See FAQ [Which SAM systems can engage HARMS?](#which-sam-systems-can-engage-harms)
 
 [Point defence setup example](#point-defence-1)
 
@@ -705,6 +706,9 @@ Very short range units (like the Shilka AAA, Rapier) won't really benefit from t
 This is due to the short range of their radars. By the time the IADS wakes them up, the contact has likely passed their engagement range.
 The strength of the Skynet IADS lies with handling long range systems that operate by radar.
 
+## Which SAM systems can engage HARMS?
+As of April 2022 I have only been able to get the SA-15, SA-10, NASAMS and Patriot to engage HARMS. The best option for a solid HARM defence is to add SA-15's around EW radars or high value SAM sites.
+
 ## What exactly does Skynet do with the SAMS?
 Via the scripting engine one can toggle the radar emitters on and off. Further options are the alarm state and the rules of engagement. In a nutshell that's all that Skynet does. Skynet does also read the radar and firing range properties of a SAM site. Based on that data and the setup options a mission designer provides Skynet will turn a SAM site on or off. 
 
@@ -712,7 +716,7 @@ No god like intervention is used (like magically exploding HARMS via the scripti
 If a SAM site or EW radar detects an inbound HARM it just turns off its radar as in real life. The HARM as it is programmed in DCS will try and glide in to the last known position mostly resulting in misses by 50-100 meters.
 
 ## Are there known bugs?
-Yes, when placing multi unit SAM sites (e.g. SA-3 Patriot..) make sure the first unit you place is the search radar. If you add any other element as the first unit, Skynet will not be able to read radar data.
+Yes, when placing multi unit SAM sites (e.g. SA-3, Patriot..) make sure the first unit you place is the search radar. If you add any other element as the first unit, Skynet will not be able to read radar data.
 The result will be that the SAM site won't go live. This bug was observed in DCS 2.5.5. The SAM site will work fine when used as a standalone unit outside of Skynet.
 
 ## How do I know if a SAM site is in range of an EW site or a SAM site in EW mode?
